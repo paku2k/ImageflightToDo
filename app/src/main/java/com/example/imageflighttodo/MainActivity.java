@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ToDoItem item1 = new ToDoItem("Test", "Dies ist ein Test", EmployeeTranslator.SIMON);
+        ToDoItem item1 = new ToDoItem("Test", "Dies ist kein Test", EmployeeTranslator.SIMON);
         items.add(item1);
 
 
