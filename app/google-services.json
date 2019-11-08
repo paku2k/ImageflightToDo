@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "55145559823",
+    "firebase_url": "https://imageflighttodo.firebaseio.com",
+    "project_id": "imageflighttodo",
+    "storage_bucket": "imageflighttodo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55145559823:android:c1d3de595b25c17d58b07a",
+        "android_client_info": {
+          "package_name": "com.example.imageflighttodo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55145559823-5popqpce8hlrkrrmchdg8fqjsrnl3d69.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.imageflighttodo",
+            "certificate_hash": "8601b42a4cc1f800bb5501da2852b69595f2fcd0"
+          }
+        },
+        {
+          "client_id": "55145559823-voemjkm5it26mcnte7tiphmc8bfj33r4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyE5xIW23IodRDJ5-RB_XCU6gRVUyEuWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "55145559823-voemjkm5it26mcnte7tiphmc8bfj33r4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
