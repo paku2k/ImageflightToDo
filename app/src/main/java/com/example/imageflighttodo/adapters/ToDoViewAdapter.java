@@ -38,13 +38,15 @@ public class ToDoViewAdapter extends RecyclerView.Adapter<ToDoViewAdapter.ViewHo
         ToDoItem item = ToDos.get(i);
         viewHolder.title.setText(item.getTitle());
         viewHolder.description.setText(item.getDescription());
-        viewHolder.assignment.setText("@"+EmployeeTranslator.translate(item.getAssignment()));
+        // TODO: 09.11.2019:  ADD USER ASSIGNED
         android.text.format.DateFormat df = new android.text.format.DateFormat();
         viewHolder.date.setText(df.format("dd.MM.yyyy 'at' HH:mm", item.getDate()));
 
         viewHolder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // TODO: 09.11.2019:  ADD DELETE ITEM METHOD
 
             }
         });

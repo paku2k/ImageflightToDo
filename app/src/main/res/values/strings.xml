@@ -12,7 +12,7 @@
 
     <string name="hint_color">Click to pick the due date</string>
 
-    <string name="hint_size">Assignment</string>
+    <string name="hint_size">Enter user email</string>
 
     <string name="save_button">Save</string>
 
@@ -25,4 +25,5 @@
     <string name="edit_time">Edit Item</string>
 
     <string name="update_text">Update</string>
+    <string name="title_activity_project_list2">ProjectList2</string>
 </resources>

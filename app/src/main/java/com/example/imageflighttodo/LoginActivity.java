@@ -2,6 +2,8 @@ package com.example.imageflighttodo;
 
 import android.content.Intent;
 import androidx.annotation.NonNull;
+
+import com.example.imageflighttodo.model.Project;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -26,13 +31,20 @@ public class LoginActivity extends AppCompatActivity {
     private EditText email, password;
     private RelativeLayout relativeLayout;
     private ProgressBar progressBar;
+    private FirebaseFirestore db;
+    private CollectionReference userRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+        db= FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        userRef = db.collection("users");
+
 
         login = findViewById(R.id.button_sign_in);
         email = findViewById(R.id.text_email_login);
@@ -96,7 +108,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressBar.setVisibility(View.GONE);
                         if(task.isSuccessful()){
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class)
+
+                            startActivity(new Intent(LoginActivity.this, ProjectList2.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK ).addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         }
 
@@ -112,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if(mAuth.getCurrentUser()!=null){
-            startActivity(new Intent(LoginActivity.this, MainActivity.class)
+            startActivity(new Intent(LoginActivity.this, ProjectList2.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK ).addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
 
