@@ -13,6 +13,7 @@ import com.example.imageflighttodo.model.Project;
 import com.example.imageflighttodo.model.ToDoItem;
 import com.example.imageflighttodo.util.userUIDTranslator;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -62,7 +64,7 @@ public class ProjectList2 extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ProjectViewAdapter adapter;
-    private List<Project> projects = new ArrayList<>();
+    private ArrayList<Project> projects = new ArrayList<>();
     private TextView logout;
     private EditText dialogTitle, dialogDescription, assignmentEditText;
     private Button dialogSave,search;
@@ -72,8 +74,9 @@ public class ProjectList2 extends AppCompatActivity {
     private String uid;
     private ArrayList<String> DBprojects;
     private ArrayList<String> usersAdded = new ArrayList<>();
-    private ArrayList<String> userEmails = new ArrayList<>();
+    //private ArrayList<String> userEmails = new ArrayList<>();
     private ArrayList<DocumentSnapshot> userDocs = new ArrayList<>();
+    private ArrayList<String> nameArray= new ArrayList<>();
 
 
     private ListView listViewUsersAdded;
@@ -110,23 +113,28 @@ public class ProjectList2 extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    ArrayList<String> nameArray= new ArrayList<>();
+
                     for (DocumentSnapshot document : task.getResult()) {
-                        for (String uid : (ArrayList < String >) document.get("collaborators")){
-                            nameArray.add(userUIDTranslator.getInstance().translateUID(uid));
+                        if(document.exists()){
+
+
+                            nameArray=(ArrayList < String >) document.get("collaborators_names");
+                            if(nameArray!= null) {
+                                Log.d("DBQuery", "nameArray for project : " + nameArray);
+                                String title = document.getString("title");
+                                projects.add(new Project(title, document.getId(), nameArray));
+                            }
                         }
 
-                        projects.add(new Project(document.get("title").toString(),document.getId(), nameArray));
                     }
                     adapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(ProjectList2.this,"Getting Projects Failed", Toast.LENGTH_LONG);
+                    Log.d("DBQuery", "onComplete: Task Failed");
+                    Toast.makeText(ProjectList2.this,"Getting Projects Failed", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
-
-        //TODO: get Projects from firestore and add the doc ids to DBprojects;
 
 
 
@@ -193,7 +201,7 @@ public class ProjectList2 extends AppCompatActivity {
             public void onClick(View view) {
                 assignmentEditText.setError(null);
                 String enteredEmail = assignmentEditText.getText().toString().trim();
-                if (enteredEmail != null) {
+                if (enteredEmail.length()>0) {
                     Query query = userRef.whereEqualTo("email", enteredEmail);
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -203,10 +211,11 @@ public class ProjectList2 extends AppCompatActivity {
                                     if (document.getId().trim().equals(mAuth.getUid().trim())){
                                         assignmentEditText.setError("You cant add yourself");
                                     }
-                                    else if((!document.get("email").toString().isEmpty())){
-                                        if(!usersAdded.contains(document.get("email").toString())) {
+                                    else if((document.getString("email")!=null)){
+                                        if(!usersAdded.contains(document.getString("email"))) {
                                             userDocs.add(document);
-                                            usersAdded.add((String) document.get("email"));
+                                            usersAdded.add(document.getString("email"));
+
                                             arrayAdapter.notifyDataSetChanged();
                                         }
                                     }
@@ -215,17 +224,8 @@ public class ProjectList2 extends AppCompatActivity {
 
                                     }
                                 }
-                                if (task.getResult().isEmpty()){
-                                    assignmentEditText.setError("user not found");
-
-                                }
-
-
-
-
                             } else {
                                 assignmentEditText.setError("user not found");
-
 
                             }
                         }
@@ -262,15 +262,15 @@ public class ProjectList2 extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
+
+                            if (document!=null) {
                                 userDocs.add(document);
+                                usersAdded.add(document.getString("email"));
                             }
                         }
-                    }
-                });
 
                         String titleString = dialogTitle.getText().toString().trim();
-                        if(titleString!=null){
+                        if(titleString.length()>0){
                             Calendar c = Calendar.getInstance();
                             Date now = c.getTime();
                             HashMap<String, Object> hm = new HashMap<>();
@@ -281,20 +281,25 @@ public class ProjectList2 extends AppCompatActivity {
                                 userUIDs.add(userDoc.getId());
                             }
                             hm.put("collaborators", userUIDs);
+                            hm.put("collaborators_names", usersAdded );
                             DocumentReference newProjectReference = projectRef.document();
                             newProjectReference.set(hm);
                             projects.add(new Project(titleString,newProjectReference.getId(), usersAdded));
                             dialog.dismiss();
+                            usersAdded.clear();
+                            userUIDs.clear();
+                            userDocs.clear();
                             adapter.notifyDataSetChanged();
-                            usersAdded=null;
-                            userUIDs=null;
-                            userDocs=null;
 
 
                         }
                         else{
                             dialogTitle.setError("Please enter a Title");
                         }
+                    }
+                });
+
+
                 }});
 
 

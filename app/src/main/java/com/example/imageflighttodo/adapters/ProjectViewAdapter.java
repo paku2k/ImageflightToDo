@@ -19,13 +19,14 @@ import com.example.imageflighttodo.model.Project;
 import com.example.imageflighttodo.model.ToDoItem;
 import com.example.imageflighttodo.util.EmployeeTranslator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectViewAdapter extends RecyclerView.Adapter<ProjectViewAdapter.ViewHolder> {
     private Context ctx;
-    private List<Project> projects;
+    private ArrayList<Project> projects;
 
-    public ProjectViewAdapter(Context context, List<Project> list){
+    public ProjectViewAdapter(Context context, ArrayList<Project> list){
         this.ctx = context;
         this.projects = list;
 
