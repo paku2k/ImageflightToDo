@@ -122,7 +122,8 @@ public class ProjectList2 extends AppCompatActivity {
                             if(nameArray!= null) {
                                 Log.d("DBQuery", "nameArray for project : " + nameArray);
                                 String title = document.getString("title");
-                                projects.add(new Project(title, document.getId(), nameArray));
+                                Date date = document.getDate("dateOfCreation");
+                                projects.add(new Project(title, document.getId(), nameArray, date));
                             }
                         }
 
@@ -147,7 +148,14 @@ public class ProjectList2 extends AppCompatActivity {
 
 
 
-        adapter = new ProjectViewAdapter(this, projects);
+        adapter = new ProjectViewAdapter(this, projects, new ProjectViewAdapter.OnProjectClickListener() {
+            @Override
+            public void onProjectClicked(Project p) {
+                String uid = p.getUid();
+                Intent intent = new Intent(ProjectList2.this, MainActivity.class).putExtra("projectUid", uid).putExtra("userList", p.getUsers());
+                startActivity(intent);
+            }
+        });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -274,17 +282,20 @@ public class ProjectList2 extends AppCompatActivity {
                             Calendar c = Calendar.getInstance();
                             Date now = c.getTime();
                             HashMap<String, Object> hm = new HashMap<>();
+                            HashMap<String, String> userUIDuserName =new HashMap<>();
                             ArrayList<String> userUIDs = new ArrayList<>();
                             hm.put("title", titleString);
                             hm.put("dateOfCreation", now);
                             for (DocumentSnapshot userDoc : userDocs){
                                 userUIDs.add(userDoc.getId());
+                                userUIDuserName.put(userDoc.getId(), userDoc.getString("email"));
                             }
+                            hm.put("collaboratorsMap", userUIDuserName);
                             hm.put("collaborators", userUIDs);
                             hm.put("collaborators_names", usersAdded );
                             DocumentReference newProjectReference = projectRef.document();
                             newProjectReference.set(hm);
-                            projects.add(new Project(titleString,newProjectReference.getId(), usersAdded));
+                            projects.add(new Project(titleString,newProjectReference.getId(), userUIDuserName, now));
                             dialog.dismiss();
                             usersAdded.clear();
                             userUIDs.clear();

@@ -8,15 +8,15 @@ import java.util.List;
 public class Project {
     private String title;
     private ArrayList<String> users; //String array of userUIDs
-    private final Date date;
+    private Date date;
     private String uid;
 
 
-    public Project(String title, String uid, ArrayList<String> users) {
+    public Project(String title, String uid, ArrayList<String> users, Date date) {
         this.title = title;
         this.uid = uid;
         this.users = users;
-        this.date =  Calendar.getInstance().getTime();
+        this.date =  date;
     }
 
     public String getUid() {
@@ -27,7 +27,9 @@ public class Project {
         return date;
     }
 
-
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getTitle() {
         return title;

@@ -1,20 +1,21 @@
 package com.example.imageflighttodo.model;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ToDoItem {
     private String title;
     private String description;
-    private int assignment;
-    private final Date date;
+    private ArrayList<String> assignmentUsers;
+    private Date date;
 
 
-    public ToDoItem(String title, String description, int assignment) {
+    public ToDoItem(String title, String description, ArrayList<String> assignment, Date date) {
         this.title = title;
         this.description = description;
-        this.assignment = assignment;
-        this.date =  Calendar.getInstance().getTime();
+        this.assignmentUsers = assignment;
+        this.date = date;
     }
 
 
@@ -22,7 +23,9 @@ public class ToDoItem {
         return date;
     }
 
-
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getTitle() {
         return title;
@@ -40,11 +43,11 @@ public class ToDoItem {
         this.description = description;
     }
 
-    public int getAssignment() {
-        return assignment;
+    public ArrayList<String> getAssignmentUsers() {
+        return assignmentUsers;
     }
 
-    public void setAssignment(int assignment) {
-        this.assignment = assignment;
+    public void setAssignmentUsers(ArrayList<String> assignmentUsers) {
+        this.assignmentUsers = assignmentUsers;
     }
 }

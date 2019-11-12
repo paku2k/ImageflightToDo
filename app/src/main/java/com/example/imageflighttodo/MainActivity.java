@@ -3,15 +3,20 @@ package com.example.imageflighttodo;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +32,10 @@ import com.example.imageflighttodo.adapters.ToDoViewAdapter;
 import com.example.imageflighttodo.model.ToDoItem;
 import com.example.imageflighttodo.util.EmployeeTranslator;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -45,14 +53,14 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private Spinner spinner;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    private String projectUID;
+    private CollectionReference todosRef;
+    private List<String> userArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        ToDoItem item1 = new ToDoItem("Test", "Dies ist kein Test", EmployeeTranslator.SIMON);
-        items.add(item1);
 
 
 
@@ -69,9 +77,25 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        ToDoItem item2 = new ToDoItem("Test2", "Dies ist ein zweiter  Test", EmployeeTranslator.WILLY);
-        items.add(item2);
-        adapter.notifyDataSetChanged();
+        projectUID = getIntent().getStringExtra("projectUid");
+        userArray=(List<String>) getIntent().getStringArrayListExtra("userList");
+
+        todosRef = db.collection("projects").document(projectUID).collection("todos");
+
+        todosRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("ToDoItem", document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.d("ToDoItem", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         return super.onOptionsItemSelected(item);
     }
     private void createDialog() {
-        AlertDialog dialog;
+        final AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         View view1 = getLayoutInflater().inflate(R.layout.popup, null);
         dialogDateSet = view1.findViewById(R.id.itemDate);
@@ -126,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         dialogDescription = view1.findViewById(R.id.itemDescription);
         dialogSave = view1.findViewById(R.id.saveItemButton);
         spinner = view1.findViewById(R.id.itemAssignmentSpinner);
-       // ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, array, android.R.layout.simple_spinner_item);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //spinner.setAdapter(adapter);
-        //spinner.setOnItemSelectedListener(this);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, userArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
 
         builder.setView(view1);
@@ -139,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         dialogSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            //    if()
+               if((dialogTitle.getText().toString().length()>0)&&(dialogDescription.getText().toString().length()>0)&&(spinner.getSelectedItem()))
             }
         });
 
